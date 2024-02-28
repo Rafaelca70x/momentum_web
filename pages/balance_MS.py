@@ -233,7 +233,7 @@ def app():
                 plt.ylabel('Aceleração AP (g)')
                 plt.ylim(-lim, lim)
                 plt.xlim(-lim, lim)
-                plt.savefig(nomearquivo + ' statokinesiogram.png')
+                plt.savefig(nomearquivo + 'statokinesiogram.png')
                 st.pyplot(plt)
 
                 plt.figure(figsize=(5, 5))
@@ -242,7 +242,7 @@ def app():
                 plt.ylabel('Magnitude de aceleração AP (g)')
                 plt.xlim(0, 6)
                 plt.ylim(0, lim/10)
-                plt.savefig(nomearquivo + ' Freq temporal x Magnitude.png')
+                plt.savefig(nomearquivo + 'Freq temporalxMagnitude.png')
                 st.pyplot(plt)
 
                 # Stabilograms plot
@@ -257,7 +257,7 @@ def app():
                 plt.xlabel('Tempo (s)')
                 plt.ylabel('Aceleração AP (g)')
                 plt.ylim(-lim, lim)
-                plt.savefig(nomearquivo + ' Stabilograms AP.png')
+                plt.savefig(nomearquivo + 'StabilogramsAP.png')
                 st.pyplot(plt)
                 plt.figure(figsize=(5, 1.9))
                 if checkbox_1 == True:
@@ -268,7 +268,7 @@ def app():
                 plt.xlabel('Tempo (s)')
                 plt.ylabel('Aceleração ML (g)')
                 plt.ylim(-lim, lim)
-                plt.savefig(nomearquivo + ' Stabilograms ML.png')
+                plt.savefig(nomearquivo + 'StabilogramsML.png')
                 st.pyplot(plt)
                 plt.figure(figsize=(5, 5))
                 plt.plot(frequencies, spectrum_amplitude_ML, 'k')
@@ -276,7 +276,7 @@ def app():
                 plt.ylabel('Energia da aceleração ML (g^2)')
                 plt.xlim(0, 6)
                 plt.ylim(0, lim/10)
-                plt.savefig(nomearquivo + ' Frequencial temporal x Energia.png')
+                plt.savefig(nomearquivo + '_Frequencial temporalxEnergia.png')
                 st.pyplot(plt)
 
                 # Printing of the features values
@@ -341,7 +341,7 @@ def app():
                 'Energia das frequências altas ML (g^2)': round(HF_energy_ML, 2)
             }
 
-        # Generate the results file (assuming it doesn't exist yet)
+        # Generate the results file 
         filename = create_results_file(results_dict)
 
         # List of image files to be included in the zip file
@@ -359,16 +359,17 @@ def app():
             for image_file in image_files:
                 if os.path.exists(image_file):
                     zip_file.write(image_file)
-            
+
             # Close the zip file
             zip_file.close()
+            
+            # Delete the image files
+            for image_file in image_files:
+                if os.path.exists(image_file):
+                    os.remove(image_file)
 
             # Delete the text file
             os.remove(nomearquivo + '.txt')
-
-            # Delete the image files
-            for image_file in image_files:
-                os.remove(image_file)
 
         st.download_button(
             label="Download results",
