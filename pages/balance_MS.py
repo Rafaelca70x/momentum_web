@@ -359,6 +359,16 @@ def app():
             for image_file in image_files:
                 if os.path.exists(image_file):
                     zip_file.write(image_file)
+            
+            # Close the zip file
+            zip_file.close()
+
+            # Delete the text file
+            os.remove(nomearquivo + '.txt')
+
+            # Delete the image files
+            for image_file in image_files:
+                os.remove(image_file)
 
         st.download_button(
             label="Download results",
@@ -366,8 +376,3 @@ def app():
             file_name=nomearquivo +".zip",
             mime="application/zip",
         )
-        
-"""        for image_file in image_files:
-            if os.path.exists(image_file):
-                os.remove(image_file)        
-"""
