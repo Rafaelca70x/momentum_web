@@ -139,6 +139,7 @@ def app():
 
             # Allocation of the data to the variables
             df = pd.read_csv(uploaded_acc, sep=custom_separator)
+            nomearquivo = uploaded_acc.name
             t = df.iloc[:, 0]
             x = df.iloc[:, 1]
             y = df.iloc[:, 2]
@@ -299,12 +300,12 @@ def app():
                 st.text('Energia das frequências altas ML (g^2) = ' +
                         str(round(HF_energy_ML, 2)))
 
-                    
+# Implementação do botão
     # Function to create a text file with the printed values
     def create_results_file(values_dict):
         filename = 'balance_results.txt'
         with open(filename, 'w') as file:
-            file.write("Balance Assessment Results:\n\n")
+            file.write(nomearquivo + "\n\n")
             for key, value in values_dict.items():
                 file.write(f"{key}: {value}\n")
             st.success(f"Results saved to {filename}")
@@ -330,15 +331,19 @@ def app():
                 'Energia das frequências médias ML (g^2)': round(MF_energy_ML, 2),
                 'Energia das frequências altas ML (g^2)': round(HF_energy_ML, 2)
             }
-        # Create the text file
+
+        # Generate the results file (assuming it doesn't exist yet)
         filename = create_results_file(results_dict)
-        # Read the file content
+
+        # Read the file content (assuming the file exists after generation)
         with open(filename, 'r') as file:
             file_content = file.read()
-        # Provide download button for the file
-    st.download_button(
-        label="Download results",
-        data=file_content,
-        file_name="balance_results.txt",
-        mime="application/octet-stream",
-    )
+
+        # Provide download button (ensure file is generated before button use)
+        if filename is not None:  # Check if file exists before offering download
+            st.download_button(
+                label="Download results",
+                data=file_content,
+                file_name= (nomearquivo),
+                mime="application/octet-stream"
+            )
