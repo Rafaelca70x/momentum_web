@@ -298,3 +298,47 @@ def app():
                         str(round(MF_energy_ML, 2)))
                 st.text('Energia das frequências altas ML (g^2) = ' +
                         str(round(HF_energy_ML, 2)))
+
+                    
+    # Function to create a text file with the printed values
+    def create_results_file(values_dict):
+        filename = 'balance_results.txt'
+        with open(filename, 'w') as file:
+            file.write("Balance Assessment Results:\n\n")
+            for key, value in values_dict.items():
+                file.write(f"{key}: {value}\n")
+            st.success(f"Results saved to {filename}")
+        return filename
+
+    # Display a button to save results to a text file
+    if st.button('Save Results to Text File'):
+        # Define the values to be saved
+        results_dict = {
+                'RMS AP (g)': round(rmsAP, 5),
+                'RMS ML (g)': round(rmsML, 5),
+                'Desvio total (g)': round(total_deviation, 3),
+                'Área (g^2)': round(area_value, 5),
+                'Eixo maior (g)': round(major_axis_value, 5),
+                'Eixo menor (g)': round(minor_axis_value, 5),
+                'Ângulo de rotação (graus)': round(angle_deg_value, 2),
+                'Frequência mediana AP (Hz)': round(median_frequency_AP, 2),
+                'Frequência mediana ML (Hz)': round(median_frequency_ML, 2),
+                'Energia das frequências baixas AP (g^2)': round(LF_energy_AP, 2),
+                'Energia das frequências médias AP (g^2)': round(MF_energy_AP, 2),
+                'Energia das frequências altas AP (g^2)': round(HF_energy_AP, 2),
+                'Energia das frequências baixas ML (g^2)': round(LF_energy_ML, 2),
+                'Energia das frequências médias ML (g^2)': round(MF_energy_ML, 2),
+                'Energia das frequências altas ML (g^2)': round(HF_energy_ML, 2)
+            }
+        # Create the text file
+        filename = create_results_file(results_dict)
+        # Read the file content
+        with open(filename, 'r') as file:
+            file_content = file.read()
+        # Provide download button for the file
+    st.download_button(
+        label="Download results",
+        data=file_content,
+        file_name="balance_results.txt",
+        mime="application/octet-stream",
+    )
