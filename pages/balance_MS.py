@@ -319,7 +319,7 @@ def app():
                         str(round(MF_energy_ML, 2)))
                 st.text('Energia das frequências altas ML (g^2) = ' +
                         str(round(HF_energy_ML, 2)))
-                
+                    
 
         # Define the values to be saved
         results_dict = {
@@ -362,21 +362,17 @@ def app():
             # Close the zip file
             zip_file.close()
                     
-        # Make sure to seek to the start of the buffer
-        zip_buffer.seek(0)  
-        
+            # Delete the text file
+            os.remove(nomearquivo + '.txt')
 
-        # Delete the text file
-        os.remove(nomearquivo + '.txt')
-
-        # Delete the image files
-        for image_file in image_files:
-            if os.path.exists(image_file):
-                os.remove(image_file)
+            # Delete the image files
+            for image_file in image_files:
+                if os.path.exists(image_file):
+                    os.remove(image_file)
 
         st.download_button(
                 label="Download results",
                 data=zip_buffer.getvalue(),
                 file_name=nomearquivo +".zip",
-                mime="application/zip",
+                mime="application/zip"
             )
