@@ -12,6 +12,16 @@ from io import BytesIO
 
 
 def app():
+    # Function to create a text file with the printed values
+    def create_results_file(values_dict):
+        filename = nomearquivo  + '.txt'
+        with open(filename, 'w') as file:
+            file.write(nomearquivo + "\n\n")
+            for key, value in values_dict.items():
+                file.write(f"{key}: {value}\n")
+            st.success(f"Results saved to {filename}")
+        return filename
+
     def butterworth_filter(data, cutoff, fs, order=4, btype='low'):
         nyquist = 0.5 * fs
         normal_cutoff = cutoff / nyquist
@@ -233,8 +243,9 @@ def app():
                 plt.ylabel('Aceleração AP (g)')
                 plt.ylim(-lim, lim)
                 plt.xlim(-lim, lim)
-                plt.savefig(nomearquivo + 'statokinesiogram.png')
-                st.pyplot(plt)
+                plt.savefig(nomearquivo + ' statokinesiogram.png')
+                st.pyplot(plt, clear_figure=True)
+                
 
                 plt.figure(figsize=(5, 5))
                 plt.plot(frequencies, spectrum_amplitude_AP, 'k')
@@ -242,8 +253,8 @@ def app():
                 plt.ylabel('Magnitude de aceleração AP (g)')
                 plt.xlim(0, 6)
                 plt.ylim(0, lim/10)
-                plt.savefig(nomearquivo + 'Freq temporalxMagnitude.png')
-                st.pyplot(plt)
+                plt.savefig(nomearquivo + ' Freq temporal x Magnitude.png')
+                st.pyplot(plt, clear_figure=True)
 
                 # Stabilograms plot
             with t2:
@@ -257,8 +268,8 @@ def app():
                 plt.xlabel('Tempo (s)')
                 plt.ylabel('Aceleração AP (g)')
                 plt.ylim(-lim, lim)
-                plt.savefig(nomearquivo + 'StabilogramsAP.png')
-                st.pyplot(plt)
+                plt.savefig(nomearquivo + ' StabilogramsAP.png')
+                st.pyplot(plt, clear_figure=True)
                 plt.figure(figsize=(5, 1.9))
                 if checkbox_1 == True:
                     plt.plot(xML, yML, 'grey')
@@ -268,16 +279,16 @@ def app():
                 plt.xlabel('Tempo (s)')
                 plt.ylabel('Aceleração ML (g)')
                 plt.ylim(-lim, lim)
-                plt.savefig(nomearquivo + 'StabilogramsML.png')
-                st.pyplot(plt)
+                plt.savefig(nomearquivo + ' StabilogramsML.png')
+                st.pyplot(plt, clear_figure=True)
                 plt.figure(figsize=(5, 5))
                 plt.plot(frequencies, spectrum_amplitude_ML, 'k')
                 plt.xlabel('Frequência Temporal (Hz)')
                 plt.ylabel('Energia da aceleração ML (g^2)')
                 plt.xlim(0, 6)
                 plt.ylim(0, lim/10)
-                plt.savefig(nomearquivo + '_Frequencial temporalxEnergia.png')
-                st.pyplot(plt)
+                plt.savefig(nomearquivo + ' Frequencial temporal x Energia.png')
+                st.pyplot(plt, clear_figure=True)
 
                 # Printing of the features values
             with t3:
@@ -308,20 +319,8 @@ def app():
                         str(round(MF_energy_ML, 2)))
                 st.text('Energia das frequências altas ML (g^2) = ' +
                         str(round(HF_energy_ML, 2)))
+                
 
-# Button implementation
-    # Function to create a text file with the printed values
-    def create_results_file(values_dict):
-        filename = nomearquivo  + '.txt'
-        with open(filename, 'w') as file:
-            file.write(nomearquivo + "\n\n")
-            for key, value in values_dict.items():
-                file.write(f"{key}: {value}\n")
-            st.success(f"Results saved to {filename}")
-        return filename
-
-    # Display a button to save results to a text file
-    if st.button('Save Results to Zip File'):
         # Define the values to be saved
         results_dict = {
                 'RMS AP (g)': round(rmsAP, 5),
@@ -342,10 +341,10 @@ def app():
             }
 
         # Generate the results file 
-        filename = create_results_file(results_dict)
+        results_file = create_results_file(results_dict)
 
         # List of image files to be included in the zip file
-        image_files = [nomearquivo + ' statokinesiogram.png', nomearquivo + ' Freq temporal x Magnitude.png', nomearquivo + ' Stabilograms AP.png', nomearquivo + ' Stabilograms ML.png', nomearquivo + ' Frequencial temporal x Energia.png']
+        image_files = [nomearquivo + ' statokinesiogram.png', nomearquivo + ' Freq temporal x Magnitude.png', nomearquivo + ' StabilogramsAP.png', nomearquivo + ' StabilogramsML.png', nomearquivo + ' Frequencial temporal x Energia.png']
 
         # Create a BytesIO buffer to hold the zip file in memory
         zip_buffer = BytesIO()
@@ -353,7 +352,7 @@ def app():
         # Create a zip file in the buffer
         with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
             # Add the text file to the zip file
-            zip_file.write(filename)
+            zip_file.write(results_file)
 
             # Add the image files to the zip file
             for image_file in image_files:
@@ -362,18 +361,22 @@ def app():
 
             # Close the zip file
             zip_file.close()
-            
-            # Delete the image files
-            for image_file in image_files:
-                if os.path.exists(image_file):
-                    os.remove(image_file)
+                    
+        # Make sure to seek to the start of the buffer
+        zip_buffer.seek(0)  
+        
 
-            # Delete the text file
-            os.remove(nomearquivo + '.txt')
+        # Delete the text file
+        os.remove(nomearquivo + '.txt')
+
+        # Delete the image files
+        for image_file in image_files:
+            if os.path.exists(image_file):
+                os.remove(image_file)
 
         st.download_button(
-            label="Download results",
-            data=zip_buffer.getvalue(),
-            file_name=nomearquivo +".zip",
-            mime="application/zip",
-        )
+                label="Download results",
+                data=zip_buffer.getvalue(),
+                file_name=nomearquivo +".zip",
+                mime="application/zip",
+            )
